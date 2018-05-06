@@ -19,21 +19,20 @@ obj-y :=
 obj-share :=
 obj-static :=
 
-TARGET := main
+TARGET_BIN := main
+TARGET_BIN += test_build_main
 
-obj-y += main.c
-obj-y += MaxCLib/
+obj-y += MaxCLib/ build_tools/
 
 $(warning Top Makefile parser)
 
 all:
 	@ make -C $(shell pwd) -f $(TOP_DIR)/Makefile.build
-	@ $(CC) -o $(TARGET) built-in.o $(LINK_FLAG)
-#	 @ $(AR) rcs -o $(TARGET) built-in.o
+#	@ $(CC) -o $(TARGET_BIN) built-in.o $(LINK_FLAG)
 
 clean:
 	find -name "*.o" -delete
-	rm $(TARGET)
+	rm $(TARGET_BIN)
 
 .PHONY : clean
 

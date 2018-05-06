@@ -1,8 +1,12 @@
-__build_bin :
+PHONY :=
+__build :
 
 obj-y :=
 obj-share :=
 obj-static:=
+TARGET_BIN :=
+TARGET_SHARE :=
+TARGET_STATIC :=
 
 #use '-' to hid error if the include file not exist
 -include Makefile
@@ -23,7 +27,21 @@ static_subdir_objs :=\
 cur_depfiles := $(shell find -name "\.*\.d")
 cur_depfiles := $(subst ./,,$(cur_depfiles))
 
-__build_bin : $(cur_subdirs) built-in.o
+PHONY += $(cur_subdirs) built-in.o
+
+ifneq ($(TARGET_BIN),)
+PHONY += $(TARGET_BIN)
+$(TARGET_BIN) :
+	@ echo CC $(addsuffix .c,$@)
+	@ $(CC) -c -o $(addsuffix .o,$@) $(addsuffix .c,$@) \
+$(COMPILE_FLAG) $(INCLUDE_FLAG)
+	@ echo LD $@-built-in.o
+	@ $(LD) -r -o $@-built-in.o $(addsuffix .o,$@) \
+$(patsubst %.c,%.o,$(cur_objs)) $(subdir_objs)
+	@ $(CC) -o $@ $(shell pwd)/$@-built-in.o $(LINK_FLAG)
+endif
+
+__build : $(PHONY)
 __build_static : $(cur_shared_subdirs) built-share-in.o
 __build_shared : $(cur_static_subdirs) built-static-in.o
 
@@ -35,7 +53,8 @@ endif
 $(cur_subdirs) :
 	@ make -C $@ -f $(TOP_DIR)/Makefile.build
 
-built-in.o : $(patsubst %.c,%.o,$(cur_objs)) $(subdir_objs)
+built-in.o : $(filter-out $(TARGET_BIN).o,$(patsubst %.c,%.o,$(cur_objs))) \
+$(subdir_objs)
 	@ echo LD $^
 	@ $(LD) -r -o $@ $^
 
