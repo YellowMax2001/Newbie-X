@@ -1,0 +1,47 @@
+__build_bin :
+
+obj-y :=
+obj-share :=
+obj-static:=
+
+#use '-' to hid error if the include file not exist
+-include Makefile
+-include makefile
+
+cur_subdirs := $(filter %/,$(obj-y))
+cur_objs := $(filter-out %/,$(obj-y))
+subdir_objs := $(foreach subdir,$(cur_subdirs),$(subdir)built-in.o)
+cur_shared_subdirs := $(filter %/,$(obj-share))
+cur_shared_objs := $(filter-out %/,$(obj-share))
+shared_subdir_objs :=\
+	$(foreach subdir,$(cur_shared_subdirs),subdir/built-share-in.o)
+cur_static_subdirs := $(filter %/,$(obj-static))
+cur_static_objs := $(filter-out %/,$(obj-static))
+static_subdir_objs :=\
+	$(foreach subdir,$(cur_static_subdirs),subdir/built-static-in.o)
+
+cur_depfiles := $(shell find -name "\.*\.d")
+cur_depfiles := $(subst ./,,$(cur_depfiles))
+
+__build_bin : $(cur_subdirs) built-in.o
+__build_static : $(cur_shared_subdirs) built-share-in.o
+__build_shared : $(cur_static_subdirs) built-static-in.o
+
+#just include the dependence files
+ifneq ($(cur_depfiles),)
+	-include $(cur_depfiles)
+endif
+
+$(cur_subdirs) :
+	@ make -C $@ -f $(TOP_DIR)/Makefile.build
+
+built-in.o : $(patsubst %.c,%.o,$(cur_objs)) $(subdir_objs)
+	@ echo LD $^
+	@ $(LD) -r -o $@ $^
+
+%.o : %.c
+	@ echo CC $<
+	@ $(CC) -c -o $@ $< $(COMPILE_FLAG) $(INCLUDE_FLAG)
+
+.PHONY : __build_bin $(cur_subdirs)
+
