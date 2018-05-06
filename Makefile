@@ -14,6 +14,7 @@ INCLUDE_FLAG := $(addprefix -I,$(INCLUDE_DIR))
 export TOP_DIR INCLUDE_DIR
 export CC AR
 export COMPILE_FLAG LINK_FLAG INCLUDE_FLAG
+export CLEAN_OBJ
 
 obj-y :=
 obj-share :=
@@ -24,13 +25,14 @@ TARGET_BIN += test_build_main
 
 obj-y += MaxCLib/ build_tools/
 
-$(warning Top Makefile parser)
-
 all:
 	@ make -C $(shell pwd) -f $(TOP_DIR)/Makefile.build
-#	@ $(CC) -o $(TARGET_BIN) built-in.o $(LINK_FLAG)
 
 clean:
+	find -name "*.o" -delete
+	@ make -C $(shell pwd) -f $(TOP_DIR)/Makefile.build CLEAN_OBJ=clean clean
+
+distclean:
 	find -name "*.o" -delete
 	rm $(TARGET_BIN)
 

@@ -14,15 +14,18 @@ TARGET_STATIC :=
 
 cur_subdirs := $(filter %/,$(obj-y))
 cur_objs := $(filter-out %/,$(obj-y))
+cur_objs := $(filter-out $(TARGET_BIN).o,$(patsubst %.c,%.o,$(cur_objs)))
 subdir_objs := $(foreach subdir,$(cur_subdirs),$(subdir)built-in.o)
+
 cur_shared_subdirs := $(filter %/,$(obj-share))
 cur_shared_objs := $(filter-out %/,$(obj-share))
 shared_subdir_objs :=\
-	$(foreach subdir,$(cur_shared_subdirs),subdir/built-share-in.o)
+	$(foreach subdir,$(cur_shared_subdirs),$(subdir)/built-share-in.o)
+
 cur_static_subdirs := $(filter %/,$(obj-static))
 cur_static_objs := $(filter-out %/,$(obj-static))
 static_subdir_objs :=\
-	$(foreach subdir,$(cur_static_subdirs),subdir/built-static-in.o)
+	$(foreach subdir,$(cur_static_subdirs),$(subdir)/built-static-in.o)
 
 cur_depfiles := $(shell find -name "\.*\.d")
 cur_depfiles := $(subst ./,,$(cur_depfiles))
@@ -41,6 +44,13 @@ $(patsubst %.c,%.o,$(cur_objs)) $(subdir_objs)
 	@ $(CC) -o $@ $(shell pwd)/$@-built-in.o $(LINK_FLAG)
 endif
 
+ifneq ($(TARGET_STATIC),)
+PHONY += built-static-in.o $(TARGET_STATIC)
+$(TARGET_STATIC) :
+	@ echo AR $@
+	@ $(AR) -rsc lib$@.a $(shell pwd)/built-static-in.o
+endif
+
 __build : $(PHONY)
 __build_static : $(cur_shared_subdirs) built-share-in.o
 __build_shared : $(cur_static_subdirs) built-static-in.o
@@ -51,10 +61,14 @@ ifneq ($(cur_depfiles),)
 endif
 
 $(cur_subdirs) :
-	@ make -C $@ -f $(TOP_DIR)/Makefile.build
+	@ make -C $@ -f $(TOP_DIR)/Makefile.build CLEAN_OBJ=$(CLEAN_OBJ) $(CLEAN_OBJ)
 
-built-in.o : $(filter-out $(TARGET_BIN).o,$(patsubst %.c,%.o,$(cur_objs))) \
-$(subdir_objs)
+built-in.o : $(patsubst %.c,%.o,$(cur_objs)) $(subdir_objs)
+	@ echo LD $^
+	@ $(LD) -r -o $@ $^
+
+built-static-in.o : $(patsubst %.c,%.o,$(cur_static_objs)) \
+$(static_subdir_objs)
 	@ echo LD $^
 	@ $(LD) -r -o $@ $^
 
@@ -63,4 +77,9 @@ $(subdir_objs)
 	@ $(CC) -c -o $@ $< $(COMPILE_FLAG) $(INCLUDE_FLAG)
 
 .PHONY : __build_bin $(cur_subdirs)
+
+clean: $(cur_subdirs)
+ifneq ($(TARGET_BIN),)
+	rm $(TARGET_BIN)
+endif
 
