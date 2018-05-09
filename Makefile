@@ -29,12 +29,14 @@ all:
 	@ make -C $(shell pwd) -f $(TOP_DIR)/Makefile.build
 
 clean:
-	find -name "*.o" -delete
-	@ make -C $(shell pwd) -f $(TOP_DIR)/Makefile.build CLEAN_OBJ=clean clean
+	@ find -name "*.o" -delete
+	@ make -C $(shell pwd) -f $(TOP_DIR)/Makefile.build \
+CLEAN_OBJ=clean clean
 
 distclean:
-	find -name "*.o" -delete
-	rm $(TARGET_BIN)
+	@ find -name "*.o" -delete
+	@ make -C $(shell pwd) -f $(TOP_DIR)/Makefile.build \
+CLEAN_OBJ=distclean distclean
 
-.PHONY : clean
+.PHONY : clean distclean
 

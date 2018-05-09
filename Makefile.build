@@ -2,36 +2,53 @@ PHONY :=
 __build :
 
 obj-y :=
-obj-share :=
-obj-static:=
+obj-shared :=
+obj-static :=
 TARGET_BIN :=
-TARGET_SHARE :=
+TARGET_SHARED :=
 TARGET_STATIC :=
 
 #use '-' to hid error if the include file not exist
 -include Makefile
 -include makefile
 
+#>>>
+#get objects
 cur_subdirs := $(filter %/,$(obj-y))
 cur_objs := $(filter-out %/,$(obj-y))
+#maybe multipule target bin exist in one table of contents
+#so we do not link TARGET_BIN into built-in.o, or the <main>
+#functions will be conflict
 cur_objs := $(filter-out $(TARGET_BIN).o,$(patsubst %.c,%.o,$(cur_objs)))
 subdir_objs := $(foreach subdir,$(cur_subdirs),$(subdir)built-in.o)
+#<<<
 
-cur_shared_subdirs := $(filter %/,$(obj-share))
-cur_shared_objs := $(filter-out %/,$(obj-share))
+#>>>
+#there has no <main> function in static&shared library object files,
+#so we need not remove TARGET_SHARED like TARGET_BIN
+cur_shared_subdirs := $(filter %/,$(obj-shared))
+cur_shared_objs := $(filter-out %/,$(obj-shared))
 shared_subdir_objs :=\
-	$(foreach subdir,$(cur_shared_subdirs),$(subdir)/built-share-in.o)
+	$(foreach subdir,$(cur_shared_subdirs),$(subdir)built-shared-in.o)
 
 cur_static_subdirs := $(filter %/,$(obj-static))
 cur_static_objs := $(filter-out %/,$(obj-static))
 static_subdir_objs :=\
-	$(foreach subdir,$(cur_static_subdirs),$(subdir)/built-static-in.o)
+	$(foreach subdir,$(cur_static_subdirs),$(subdir)built-static-in.o)
+#<<<
 
-cur_depfiles := $(shell find -name "\.*\.d")
+cur_depfiles := $(shell find -maxdepth 1 -name "\.*\.d")
 cur_depfiles := $(subst ./,,$(cur_depfiles))
+
+#just include the dependence files
+ifneq ($(cur_depfiles),)
+-include $(cur_depfiles)
+endif
 
 PHONY += $(cur_subdirs) built-in.o
 
+#>>>
+#main object
 ifneq ($(TARGET_BIN),)
 PHONY += $(TARGET_BIN)
 $(TARGET_BIN) :
@@ -43,22 +60,57 @@ $(COMPILE_FLAG) $(INCLUDE_FLAG)
 $(patsubst %.c,%.o,$(cur_objs)) $(subdir_objs)
 	@ $(CC) -o $@ $(shell pwd)/$@-built-in.o $(LINK_FLAG)
 endif
+#<<<
+
+ifeq ($(TARGET_STATIC),$(TARGET_SHARED))
+ifneq ($(TARGET_STATIC),)
+TARGET_STATIC := $(TARGET_STATIC)_static
+TARGET_SHARED := $(TARGET_SHARED)_shared
+endif
+endif
+
+#>>>
+#static library
+ifneq ($(cur_static_objs)$(static_subdir_objs),)
+PHONY += built-static-in.o
+built-static-in.o : $(patsubst %.c,%.o,$(cur_static_objs)) \
+$(static_subdir_objs)
+	@ echo LD $^
+	@ $(LD) -r -o $@ $^
+endif
 
 ifneq ($(TARGET_STATIC),)
-PHONY += built-static-in.o $(TARGET_STATIC)
-$(TARGET_STATIC) :
+PHONY += $(TARGET_STATIC)
+
+$(TARGET_STATIC) : built-static-in.o
 	@ echo AR $@
-	@ $(AR) -rsc lib$@.a $(shell pwd)/built-static-in.o
+	@ $(AR) -rsc lib$@.a $^
+endif
+#<<<
+
+#>>>
+#shared library
+ifneq ($(cur_shared_objs)$(shared_subdir_objs),)
+PHONY += built-shared-in.o
+built-shared-in.o : $(patsubst %.c,%.o,$(cur_shared_objs)) \
+$(shared_subdir_objs)
+	@ echo LD $^
+	@ $(LD) -r -o $@ $^
 endif
 
+ifneq ($(TARGET_SHARED),)
+PHONY += $(TARGET_SHARED)
+
+$(TARGET_SHARED) : built-shared-in.o
+	@ echo CC $@
+	@ $(CC) -shared -fPIC -o lib$@.so $^
+endif
+#<<<
+
+#it will looks like
+# __build : CurSubdirs built-in.o BUILD_BIN \
+#built-shared-in.o BUILD_SHARED_BIN built-static-in.o BUILD_STATIC_BIN
 __build : $(PHONY)
-__build_static : $(cur_shared_subdirs) built-share-in.o
-__build_shared : $(cur_static_subdirs) built-static-in.o
-
-#just include the dependence files
-ifneq ($(cur_depfiles),)
-	-include $(cur_depfiles)
-endif
 
 $(cur_subdirs) :
 	@ make -C $@ -f $(TOP_DIR)/Makefile.build CLEAN_OBJ=$(CLEAN_OBJ) $(CLEAN_OBJ)
@@ -67,19 +119,27 @@ built-in.o : $(patsubst %.c,%.o,$(cur_objs)) $(subdir_objs)
 	@ echo LD $^
 	@ $(LD) -r -o $@ $^
 
-built-static-in.o : $(patsubst %.c,%.o,$(cur_static_objs)) \
-$(static_subdir_objs)
-	@ echo LD $^
-	@ $(LD) -r -o $@ $^
-
 %.o : %.c
 	@ echo CC $<
-	@ $(CC) -c -o $@ $< $(COMPILE_FLAG) $(INCLUDE_FLAG)
+	@ $(CC) -Wp,-MD,.$@.d -c -o $@ $< $(COMPILE_FLAG) $(INCLUDE_FLAG)
 
 .PHONY : __build_bin $(cur_subdirs)
 
 clean: $(cur_subdirs)
 ifneq ($(TARGET_BIN),)
-	rm $(TARGET_BIN)
+	rm -f $(TARGET_BIN)
 endif
+
+distclean: $(cur_subdirs)
+ifneq ($(TARGET_BIN),)
+	rm -f $(TARGET_BIN)
+endif
+ifneq ($(TARGET_STATIC),)
+	rm -f lib$(TARGET_STATIC)*.a
+endif
+ifneq ($(TARGET_SHARED),)
+	rm -f lib$(TARGET_SHARED)*.so
+	rm -f lib$(TARGET_SHARED)*.so.*
+endif
+
 

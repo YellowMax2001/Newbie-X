@@ -8,6 +8,10 @@
 	2）保证 main_file.c 文件一定存在，并且该文件就是包含 main 函数的文件（需要使用该文件最终生成目标 bin）
 	3）其余的子文件以及文件夹还是分别按照 obj-y += dir/ obj-y += file.c 的形式追加
 	4）尽量不要再写 obj-y += main_file.c 追加 main 函数所在的文件
+5.支持编译多个动态库与静态库
+	1）指定目标库的名字 TARGET_STATIC := name （静态库，最终会生成libname.a）
+	TARGET_SHARED := name（动态库，最终会生成libname.so）
+	2）obj-static 与 obj-shared 指定目标文件
 
 Makefile规则：
 1.首要目标（终极目标）
