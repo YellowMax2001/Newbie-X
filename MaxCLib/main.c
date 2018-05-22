@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 
     struct ring_buffer *rb;
 
-    rb = ring_buffer_create(ELEM_SIZE, ELEM_NUM);
+    rb = ring_buffer_create(ELEM_SIZE, ELEM_NUM, RB_FL_THREAD_SAFE);
     if (NULL == rb) {
         nb_loge("ring_buffer_create failed!!\r\n");
         ret = -1;

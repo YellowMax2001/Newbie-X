@@ -26,6 +26,7 @@ void *rb_write_thread(void *arg)
         (struct ring_buffer *)arg;
 
     int i = 0;
+    int j = 0;
     char rb_buf[4*10];
     
     while (1) {
@@ -34,14 +35,15 @@ void *rb_write_thread(void *arg)
         }
 
         for (i = 0; i < sizeof(rb_buf)/sizeof(typeof(rb_buf[0]))/4; i++) {
-            rb_buf[4*i+0] = 4*i+0;
-            rb_buf[4*i+1] = 4*i+1;
-            rb_buf[4*i+2] = 4*i+2;
-            rb_buf[4*i+3] = 4*i+3;
+            rb_buf[4*i+0] = 4*j+0;
+            rb_buf[4*i+1] = 4*j+1;
+            rb_buf[4*i+2] = 4*j+2;
+            rb_buf[4*i+3] = 4*j+3;
         }
+        j++;
 
-        rb->rb_in(rb, &rb_buf[0], ELEM_NUM);
-        usleep(1000*1000);
+        rb->rb_in_f(rb, &rb_buf[0], ELEM_NUM);
+        usleep(300*1000);
     }
 
     pthread_exit(NULL);
@@ -66,7 +68,7 @@ void *rb_read_thread(void *arg)
                 printf("get one data(%d)\r\n", rb_buf[i]);
             }
         }
-        usleep(10*1000);
+        usleep(1000*1000);
     }
 
     pthread_exit(NULL);
@@ -80,7 +82,7 @@ int main(int argc, char *argv[])
 
     struct ring_buffer *rb;
 
-    rb = ring_buffer_create(ELEM_SIZE, ELEM_NUM);
+    rb = ring_buffer_create(ELEM_SIZE, ELEM_NUM, RB_FL_THREAD_SAFE);
     if (NULL == rb) {
         nb_loge("ring_buffer_create failed!!\r\n");
         ret = -1;
