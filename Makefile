@@ -21,9 +21,9 @@ obj-share :=
 obj-static :=
 
 TARGET_BIN := main
-TARGET_BIN += test_build_main
 
 obj-y += MaxCLib/ build_tools/
+obj-y += main.c
 
 all:
 	@ make -C $(shell pwd) -f $(TOP_DIR)/Makefile.build
