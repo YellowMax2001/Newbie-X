@@ -19,7 +19,7 @@ cur_objs := $(filter-out %/,$(obj-y))
 #maybe multipule target bin exist in one table of contents
 #so we do not link TARGET_BIN into built-in.o, or the <main>
 #functions will be conflict
-cur_objs := $(filter-out $(TARGET_BIN).o,$(patsubst %.c,%.o,$(cur_objs)))
+cur_objs := $(filter-out $(addsuffix .o,$(TARGET_BIN)),$(patsubst %.c,%.o,$(cur_objs)))
 subdir_objs := $(foreach subdir,$(cur_subdirs),$(subdir)built-in.o)
 #<<<
 
@@ -51,7 +51,7 @@ PHONY += $(cur_subdirs) built-in.o
 #main object
 ifneq ($(TARGET_BIN),)
 PHONY += $(TARGET_BIN)
-$(TARGET_BIN) : built-in.o $(TARGET_BIN).o
+$(TARGET_BIN) : built-in.o $(addsuffix .o,$(TARGET_BIN))
 	@ echo CC $(addsuffix .c,$@)
 	@ $(CC) -c -o $(addsuffix .o,$@) $(addsuffix .c,$@) \
 $(COMPILE_FLAG) $(INCLUDE_FLAG)
