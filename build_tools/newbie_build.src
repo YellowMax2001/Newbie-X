@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export TOP_DIR=`pwd`
+export BUILD_ENV=${TOP_DIR}/build_tools/build_env.build
+

@@ -1,3 +1,6 @@
+## 使用
+首先在系统上面的根目录下面执行 source ./build_tools/newbie_build.src 来初始化环境，注意--一定要在根目录下。
+
 ## 功能需求
 1. 可以选择整体进行编译（在build的基础上面实现一个类linux的编译方式），
 并且可以选择内部的某些模块编译成动态库、可执行文件、静态库等
@@ -11,6 +14,11 @@
 5. 支持编译多个动态库与静态库
     - 指定目标库的名字 **TARGET_STATIC := name （静态库，最终会生成libname.a）	TARGET_SHARED := name（动态库，最终会生成libname.so）**
     - obj-static 与 obj-shared 指定目标文件
+6.支持将built-in.o限定与某一个文件夹下面，该文件夹下面的built-in.o不参与更上层的目标文件生成过程
+	- obj-dir 指定限定文件夹的名字
+7.支持在某一个文件夹下面指定目标进行make，生成目标文件
+	- 在自定义工程的顶级目录下面首先键入 include $(BUILD_ENV)
+	- 参照根目录下面的 Makefile 编写规则编写即可满足要求
 
 ## Makefile规则
 1. 首要目标（终极目标）
