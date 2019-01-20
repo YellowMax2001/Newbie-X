@@ -23,7 +23,7 @@
 
 /**
  * struct ring_buffer - ring buffer implement
- *!!!!!!!!!!!!!!!!!!the read write oprtation is not thread safe.!!!!!!!!!
+ *!!!!the read write oprtation is not thread safe by default.!!!!!!!
  * @rb_in:	input data to ring buffer
  * @rb_in_f:	force input data to ring buffer,
  * even it will be overwritten(if it was used,RB_FL_FORCE_WRITE flag must be set)
@@ -50,10 +50,14 @@ struct ring_buffer {
     void *private;
 };
 
-/*
+/* the default value
 */
 #define RB_FL_NONE        0UL
+/* write ring buffer no matter it is full or not
+* if is full, the old buffer will be overwrite.
+*/
 #define RB_FL_FORCE_WRITE 1<<0UL
+/* you can use rb_in by thread safe */
 #define RB_FL_THREAD_SAFE 1<<1UL
 
 /**
@@ -64,32 +68,6 @@ struct ring_buffer {
 struct ring_buffer_attr {
     bool force_w;
     bool safe_t;
-};
-
-/**
- * struct ring_buffer_entity - ring buffer internal implement
- * @rb_lock: lock of read write operation.
- * @rb_in:	input index
- * @rb_out:	output index
- * @elem_size: meta data size in bytes
- * @elem_cnt:	  how many meta data in this ring buffer
- * @rb_full: is this ring buffer is full?
- * @rb_buf: the real buffer address
- * @rb_handle: used by users, include some callbacks
- */
-struct ring_buffer_entity {
-    pthread_mutex_t rb_lock;
-    uint32_t rb_in;
-    uint32_t rb_out;
-
-    uint32_t elem_size;
-    uint32_t elem_cnt;
-    bool rb_full;
-
-    unsigned char *rb_buf;
-
-    struct ring_buffer_attr rb_attr;
-    struct ring_buffer rb_handle;
 };
 
 struct ring_buffer *ring_buffer_create

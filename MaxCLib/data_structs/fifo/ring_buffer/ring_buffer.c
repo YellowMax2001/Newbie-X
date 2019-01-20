@@ -16,6 +16,32 @@
 
 #include <data_structs/ring_buffer.h>
 
+/**
+ * struct ring_buffer_entity - ring buffer internal implement
+ * @rb_lock: lock of read write operation.
+ * @rb_in:	input index
+ * @rb_out:	output index
+ * @elem_size: meta data size in bytes
+ * @elem_cnt:	  how many meta data in this ring buffer
+ * @rb_full: is this ring buffer is full?
+ * @rb_buf: the real buffer address
+ * @rb_handle: used by users, include some callbacks
+ */
+struct ring_buffer_entity {
+    pthread_mutex_t rb_lock;
+    uint32_t rb_in;
+    uint32_t rb_out;
+
+    uint32_t elem_size;
+    uint32_t elem_cnt;
+    bool rb_full;
+
+    unsigned char *rb_buf;
+
+    struct ring_buffer_attr rb_attr;
+    struct ring_buffer rb_handle;
+};
+
 static inline struct ring_buffer_entity 
     *rb_hd_to_ent(struct ring_buffer *rb_hd)
 {
@@ -109,11 +135,17 @@ static int rb_out(struct ring_buffer *rb_hd,
     uint32_t cp_cnt   = min(elem_num, rb_ent->rb_in-rb_ent->rb_out);
     uint32_t cp_step1 = min(cp_cnt,
         rb_ent->elem_cnt - (rb_ent->rb_out%rb_ent->elem_cnt));
+
+    if (NULL == buf_out)
+        goto copy_end;
+
     memcpy(buf_out, rb_ent->rb_buf+
         (rb_ent->rb_out%rb_ent->elem_cnt)*rb_ent->elem_size,
         cp_step1*rb_ent->elem_size);
     memcpy((unsigned char *)buf_out+cp_step1*rb_ent->elem_size,
         rb_ent->rb_buf, (cp_cnt-cp_step1)*rb_ent->elem_size);
+
+copy_end:
     rb_ent->rb_out += cp_cnt;
 
     /* ring buffer empty, just reset in&out pointer */
