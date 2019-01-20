@@ -13,8 +13,8 @@
 #include <stdio.h>
 
 #define nb_loge printf
+#define nb_logw printf
+#define nb_logd printf
+#define nb_logv(...)
 
 #endif /* endof _YM_PLAT_LOG_ */
-
-
-
