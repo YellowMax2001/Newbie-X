@@ -1,4 +1,4 @@
-TARGET_BIN := main
+MAXBUILD_BIN := main
 
 obj-y += data_structs/
 obj-dir += streams/

@@ -1,7 +1,7 @@
-TARGET_BIN := rb_test
+MAXBUILD_BIN := fifo_test
 
-obj-y += ring_buffer.c
-obj-shared += ring_buffer.c
+obj-y += list_fifo.c
+obj-shared += list_fifo.c
 
-obj-y += rb_test.c
+obj-y += list_fifo.c
 

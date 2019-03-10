@@ -1,5 +1,5 @@
-TARGET_STATIC := test
-TARGET_SHARED := test
+MAXBUILD_STATIC := test
+MAXBUILD_SHARED := test
 
 obj-y += ring_buffer/
 obj-y += test_build.c

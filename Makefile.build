@@ -5,10 +5,10 @@ obj-y :=
 obj-dir :=
 obj-shared :=
 obj-static :=
-TARGET_BIN :=
-TARGET_SHARED :=
-TARGET_STATIC :=
-TARGET_FLAG :=
+MAXBUILD_BIN :=
+MAXBUILD_SHARED :=
+MAXBUILD_STATIC :=
+MAXBUILD_FLAG :=
 INCLUDE_FLAG :=
 
 #use '-' to hid error if the include file not exist
@@ -22,15 +22,15 @@ include_dir = $(addprefix -I,$(INCLUDE_FLAG))
 cur_subdirs := $(filter %/,$(obj-y) $(obj-dir))
 cur_objs := $(filter-out %/,$(obj-y))
 #maybe multipule target bin exist in one table of contents
-#so we do not link TARGET_BIN into built-in.o, or the <main>
+#so we do not link MAXBUILD_BIN into built-in.o, or the <main>
 #functions will be conflict
-cur_objs := $(filter-out $(addsuffix .o,$(TARGET_BIN)),$(patsubst %.c,%.o,$(cur_objs)))
+cur_objs := $(filter-out $(addsuffix .o,$(MAXBUILD_BIN)),$(patsubst %.c,%.o,$(cur_objs)))
 subdir_objs := $(foreach subdir,$(cur_subdirs),$(subdir)built-in.o)
 #<<<
 
 #>>>
 #there has no <main> function in static&shared library object files,
-#so we need not remove TARGET_SHARED like TARGET_BIN
+#so we need not remove MAXBUILD_SHARED like MAXBUILD_BIN
 cur_shared_subdirs := $(filter %/,$(obj-shared))
 cur_shared_objs := $(filter-out %/,$(obj-shared))
 cur_shared_objs := $(patsubst %.c,%.o,$(cur_shared_objs))
@@ -60,23 +60,23 @@ PHONY += $(cur_subdirs) built-in.o
 
 #>>>
 #main object
-ifneq ($(TARGET_BIN),)
-PHONY += $(TARGET_BIN)
-$(TARGET_BIN) : built-in.o $(addsuffix .o,$(TARGET_BIN))
+ifneq ($(MAXBUILD_BIN),)
+PHONY += $(MAXBUILD_BIN)
+$(MAXBUILD_BIN) : built-in.o $(addsuffix .o,$(MAXBUILD_BIN))
 	@ echo CC $(addsuffix .c,$@)
 	@ $(CC) -c -o $(addsuffix .o,$@) $(addsuffix .c,$@) \
 $(COMPILE_FLAG) $(SYS_INC) $(include_dir)
 	@ echo LD $@-built-in.o
 	@ $(LD) -r -o $@-built-in.o $(addsuffix .o,$@) \
 $(patsubst %.c,%.o,$(cur_objs)) $(subdir_objs)
-	@ $(CC) $(TARGET_FLAG) -o $@ $(shell pwd)/$@-built-in.o $(LINK_FLAG)
+	@ $(CC) $(MAXBUILD_FLAG) -o $@ $(shell pwd)/$@-built-in.o $(LINK_FLAG)
 endif
 #<<<
 
-ifeq ($(TARGET_STATIC),$(TARGET_SHARED))
-ifneq ($(TARGET_STATIC),)
-TARGET_STATIC := $(TARGET_STATIC)_static
-TARGET_SHARED := $(TARGET_SHARED)_shared
+ifeq ($(MAXBUILD_STATIC),$(MAXBUILD_SHARED))
+ifneq ($(MAXBUILD_STATIC),)
+MAXBUILD_STATIC := $(MAXBUILD_STATIC)_static
+MAXBUILD_SHARED := $(MAXBUILD_SHARED)_shared
 endif
 endif
 
@@ -90,12 +90,12 @@ $(static_subdir_objs)
 	@ $(LD) -r -o $@ $^
 endif
 
-ifneq ($(TARGET_STATIC),)
-PHONY += $(TARGET_STATIC)
+ifneq ($(MAXBUILD_STATIC),)
+PHONY += $(MAXBUILD_STATIC)
 
-$(TARGET_STATIC) : built-static-in.o
+$(MAXBUILD_STATIC) : built-static-in.o
 	@ echo AR $@
-	@ $(AR) $(TARGET_FLAG) -rsc lib$@.a $^
+	@ $(AR) $(MAXBUILD_FLAG) -rsc lib$@.a $^
 endif
 #<<<
 
@@ -109,12 +109,12 @@ $(shared_subdir_objs)
 	@ $(LD) -r -o $@ $^
 endif
 
-ifneq ($(TARGET_SHARED),)
-PHONY += $(TARGET_SHARED)
+ifneq ($(MAXBUILD_SHARED),)
+PHONY += $(MAXBUILD_SHARED)
 
-$(TARGET_SHARED) : built-shared-in.o
+$(MAXBUILD_SHARED) : built-shared-in.o
 	@ echo CC $@
-	@ $(CC) $(TARGET_FLAG) -shared -fPIC -o lib$@.so $^
+	@ $(CC) $(MAXBUILD_FLAG) -shared -fPIC -o lib$@.so $^
 endif
 #<<<
 
@@ -137,25 +137,25 @@ built-in.o : $(patsubst %.c,%.o,$(cur_objs)) $(subdir_objs)
 .PHONY : __build_bin $(cur_subdirs)
 
 clean: $(cur_subdirs)
-ifneq ($(TARGET_BIN),)
-	rm -f $(TARGET_BIN)
+ifneq ($(MAXBUILD_BIN),)
+	rm -f $(MAXBUILD_BIN)
 else
 	@ echo Nothing to do ...
 endif
 
 distclean: $(cur_subdirs)
-ifneq ($(TARGET_BIN),)
-	rm -f $(TARGET_BIN)
+ifneq ($(MAXBUILD_BIN),)
+	rm -f $(MAXBUILD_BIN)
 endif
-ifneq ($(TARGET_STATIC),)
-	rm -f lib$(TARGET_STATIC)*.a
+ifneq ($(MAXBUILD_STATIC),)
+	rm -f lib$(MAXBUILD_STATIC)*.a
 endif
-ifneq ($(TARGET_SHARED),)
-	rm -f lib$(TARGET_SHARED)*.so
-	rm -f lib$(TARGET_SHARED)*.so.*
+ifneq ($(MAXBUILD_SHARED),)
+	rm -f lib$(MAXBUILD_SHARED)*.so
+	rm -f lib$(MAXBUILD_SHARED)*.so.*
 endif
 
-ifeq ($(TARGET_BIN) $(TARGET_STATIC) $(TARGET_SHARED),)
+ifeq ($(MAXBUILD_BIN) $(MAXBUILD_STATIC) $(MAXBUILD_SHARED),)
 	@ echo Nothing to do ...
 endif
 

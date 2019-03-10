@@ -10,7 +10,7 @@ COMPILE_FLAG := -std=gnu99
 LINK_FLAG := -lpthread
 SYS_INC := $(addprefix -I,$(INCLUDE_DIR))
 INCLUDE_FLAG :=
-TARGET_FLAG :=
+MAXBUILD_FLAG :=
 
 #to make the sub-make can use it
 export TOP_DIR INCLUDE_DIR

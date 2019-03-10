@@ -1,4 +1,4 @@
-TARGET_BIN := rb_test
+MAXBUILD_BIN := rb_test
 
 obj-y += ring_buffer.c
 obj-shared += ring_buffer.c
