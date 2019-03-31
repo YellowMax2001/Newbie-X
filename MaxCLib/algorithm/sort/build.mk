@@ -25,3 +25,21 @@ MAXBUILD_MODULE := selection_sort
 
 include $(BUILD_BIN)
 
+#####################
+include $(BUILD_RESET)
+
+MAXBUILD_SRC := quick_sort.c
+
+MAXBUILD_MODULE := quick_sort
+
+include $(BUILD_BIN)
+
+#####################
+include $(BUILD_RESET)
+
+MAXBUILD_SRC := merge_sort.c
+
+MAXBUILD_MODULE := merge_sort
+
+include $(BUILD_BIN)
+
