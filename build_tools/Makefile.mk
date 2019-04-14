@@ -29,6 +29,8 @@ ALL_OBJS :=
 MAXBUILD_DIR ?=
 MAXBUILD_SUBDIRS ?=
 MAXBUILD_MODULE ?=
+MAXBUILD_CCFLAGS ?=
+MAXBUILD_INC ?=
 
 # end of build.mk configs
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<

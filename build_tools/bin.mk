@@ -7,7 +7,8 @@ target_module := $(addprefix $(MAXBUILD_DIR)/,$(MAXBUILD_MODULE))
 ALL_MODULES += $(target_module)
 ALL_OBJS += $(target_src:%.c=%.o)
 
-#CC_FLAGS +=
+CC_FLAGS += $(MAXBUILD_CCFLAGS)
+CC_INC += $(MAXBUILD_INC)
 
 # end of main Makefile config
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -15,7 +16,7 @@ ALL_OBJS += $(target_src:%.c=%.o)
 target_objs := $(target_src:%.c=%.o)
 target_deps := $(target_src:%.c=%.d)
 $(target_module) : $(target_objs)
-	$(CC) $(strip $(CC_FLAGS)) -o $@ $^
+	$(CC) -o $@ $^ $(strip $(CC_FLAGS))
 
 %.o : %.c
 ifeq ($(DBG),1)
@@ -25,7 +26,7 @@ ifeq ($(DBG),1)
 	@echo "$<"
 	@echo "$^"
 endif
-	$(CC) $(strip $(CC_INC)) $(strip $(CC_FLAGS)) -c -o $@ $<
+	$(CC) $(strip $(CC_INC)) -c -o $@ $< $(strip $(CC_FLAGS))
 
 #%.o : %.d
 #
