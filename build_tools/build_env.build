@@ -24,6 +24,7 @@ obj-share :=
 obj-static :=
 
 all:
+	$(if $(pwd) = $(TOP_DIR), make -C $(shell pwd) -f $(TOP_DIR)/Makefile.build,echo "This is not TOP DIR!!!")
 	@ make -C $(shell pwd) -f $(TOP_DIR)/Makefile.build
 
 clean:

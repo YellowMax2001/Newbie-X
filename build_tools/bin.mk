@@ -28,11 +28,3 @@ ifeq ($(DBG),1)
 endif
 	$(CC) $(strip $(CC_INC)) -c -o $@ $< $(strip $(CC_FLAGS))
 
-#%.o : %.d
-#
-#%.d : %.c
-#	$(CC) $(CC_INC) $(strip $(CC_FLAGS)) -MM $< > $d
-#
-#include $(target_src:%.c=%.d)
-#	$(CC) $(strip $(CC_INC)) $(strip $(CC_FLAGS)) -c -o $@ $<
-

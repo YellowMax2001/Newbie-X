@@ -3,5 +3,20 @@
 export TOP_DIR=`pwd`
 export BUILD_ENV=${TOP_DIR}/build_tools/build_env.build
 export PATH=$PATH:$TOP_DIR/tools/
-export COMPILE_PREFIX=
+export BUILD_TOOLS_DIR="${TOP_DIR}/build_tools/"
+export BUILD_DEFAULT_SUB_SCRIPT="Compile.mk"
+export BUILD_DEFAULT_SUB_LISTS_SCRIPT="Compile_list.mk"
+export ENV_COMPILE_FUNCTIONS="${BUILD_TOOLS_DIR}/Compile_functions.mk"
+export ENV_CLEAN_SCRIPT="${BUILD_TOOLS_DIR}/Compile_EnvClean.mk"
+export ENV_BIN_TARGET_SCRIPT="${BUILD_TOOLS_DIR}/Compile_BinTarget.mk"
+export ENV_SHARELIB_SCRIPT="${BUILD_TOOLS_DIR}/Compile_SharedLibTarget.mk"
+export ENV_STATICLIB_SCRIPT="${BUILD_TOOLS_DIR}/Compile_StaticLibTarget.mk"
+export COMPILE_CC_PREFIX=
 
+export Newbie_Mv=mv
+export Mewbie_Cp=cp
+export Mewbie_Rm=rm
+
+croot () {
+    cd $TOP_DIR
+}
