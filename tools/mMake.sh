@@ -16,11 +16,9 @@ echo "\033[31mBUILD:\033[0m \033[34m ${BUILD} \033[0m"
 echo "\033[31mMAXBUILD_DIR:\033[0m \033[34m ${MAXBUILD_DIR} \033[0m"
 
 if [ "$1" = "clean" ]; then
-#	find -name "*.o" -delete
 	make -f ${BUILD_MK_FILE}  BUILD_SCRIPT_FILE=${BUILD} MAXBUILD_DIR=${MAXBUILD_DIR} clean
-elif [ "$1" = "" ]; then
-	make -f ${BUILD_MK_FILE}  BUILD_SCRIPT_FILE=${BUILD} MAXBUILD_DIR=${MAXBUILD_DIR} all
-	echo "$1"
+elif [ "$1" = "distclean" ]; then
+	make -f ${BUILD_MK_FILE}  BUILD_SCRIPT_FILE=${BUILD} MAXBUILD_DIR=${MAXBUILD_DIR} distclean
 elif [ "$1" = "dbg" ]; then
 	make -f ${BUILD_MK_FILE}  BUILD_SCRIPT_FILE=${BUILD} MAXBUILD_DIR=${MAXBUILD_DIR} BUILD_DBG="1" all
 	echo "$1"
@@ -32,7 +30,7 @@ elif [ "$1" = "help" ]; then
 	echo "    3. dbg: display debug informations for debug build system"
 	echo "    4. if the opt is null, then will build all targets, include modules and so on"
 else
-	make -f ${BUILD_MK_FILE} build=${BUILD} MAXBUILD_DIR=${MAXBUILD_DIR} $@
+	make -f ${BUILD_MK_FILE}  BUILD_SCRIPT_FILE=${BUILD} MAXBUILD_DIR=${MAXBUILD_DIR} all
 	echo "$1"
 fi
 

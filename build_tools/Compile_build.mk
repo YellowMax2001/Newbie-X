@@ -8,11 +8,14 @@ Compile_CC := ${Compile_CCPrefix}gcc
 Compile_CPP := ${Compile_CCPrefix}g++
 Compile_AR := ${Compile_CCPrefix}ar
 
-CC_COMPILE_FLAG := -std=gnu99
+CC_COMPILE_FLAG := -fPIC -std=gnu99
 CC_LINK_FLAG := -lpthread
-CPP_COMPILE_FLAG :=
+CPP_COMPILE_FLAG := -fPIC
 CPP_LINK_FLAG :=
 SYS_INC := $(addprefix -I,$(Compile_RootIncludeDir_Default))
+
+COMPILE_INFO_PREFIX=@
+COMPILE_OPTION_PREFIX=@
 
 # Default params
 Compile_RootIncludeDir_Default := ${SYS_INC}
@@ -34,6 +37,8 @@ export SplittedCompileSrcFiles_Default CompileSrcFiles_Default
 export CompileCCFlags_Default CompileCPPFlags_Default CompileCCLinkFlags_Default CompileCPPLinkFlags_Default
 export CompileTarget_Default CompileTargetLists CompileCleanDirs_Default
 
+export COMPILE_INFO_PREFIX COMPILE_OPTION_PREFIX
+
 -include $(TOP_DIR)/$(BUILD_DEFAULT_SUB_LISTS_SCRIPT)
 
 # If we got a unempty ${CUR_DIR}/Compile.mk file,
@@ -44,12 +49,24 @@ CompileTargetLists := $(MAXBUILD_DIR)
 endif
 
 all:
-	@ $(foreach module,${CompileTargetLists},@ make -C ${module} -f $(BUILD_DEFAULT_SUB_SCRIPT) BUILD_DBG=$(BUILD_DBG) all)
+ifeq ($(BUILD_DBG),1)
+	@ echo "\033[31mMainBuildFile\033[0m"
+	@ for module in ${CompileTargetLists}; do \
+		echo "\033[31m$$module\033[0m"; \
+	done
+endif
+	@ for module in ${CompileTargetLists}; do \
+		make -C $$module -f $(BUILD_DEFAULT_SUB_SCRIPT) BUILD_DBG=$(BUILD_DBG) all; \
+	done
 
 clean:
-	@ $(foreach module,${CompileTargetLists},@ make -C ${module} -f $(BUILD_DEFAULT_SUB_SCRIPT) BUILD_DBG=$(BUILD_DBG) clean)
+	@ for module in ${CompileTargetLists}; do \
+		make -C $$module -f $(BUILD_DEFAULT_SUB_SCRIPT) BUILD_DBG=$(BUILD_DBG) clean; \
+	done
 
 distclean:
-	@ $(foreach module,${CompileTargetLists},@ make -C ${module} -f $(BUILD_DEFAULT_SUB_SCRIPT) BUILD_DBG=$(BUILD_DBG) distclean)
+	@ for module in ${CompileTargetLists}; do \
+		make -C $$module -f $(BUILD_DEFAULT_SUB_SCRIPT) BUILD_DBG=$(BUILD_DBG) distclean; \
+	done
 
 .PHONY : clean distclean
