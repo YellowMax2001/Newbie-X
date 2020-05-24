@@ -8,52 +8,38 @@
 
 ### 目录结构
 ```
-├── build_tools
-│   ├── bin.mk
-│   ├── build_system_design.txt
-│   ├── build_system.src
-│   ├── clean.mk
-│   ├── main.c
-│   ├── Makefile
-│   ├── shard_lib.mk
-│   ├── static.mk
-│   └── test_build.c
-├── compile.mk
+./
+├── CPPs
+│   ├── STLimpl
+│   ├── basicLang
+│   └── commonInc
+├── Compile_list.mk
 ├── LICENSE
-├── main.c
-├── Makefile
-├── Makefile.build
 ├── MaxCLib
-│   ├── build
-│   │   └── build_system_design.txt
+│   ├── algorithm
 │   ├── data_structs
-│   │   ├── fifo
-│   │   │   ├── Makefile
-│   │   │   ├── Readme.md
-│   │   │   ├── ring_buffer
-│   │   │   │   ├── Makefile
-│   │   │   │   ├── rb_test.c
-│   │   │   │   ├── Readme.md
-│   │   │   │   └── ring_buffer.c
-│   │   │   └── test_build.c
-│   │   └── Makefile
 │   ├── include
-│   │   ├── data_structs
-│   │   │   └── ring_buffer.h
-│   │   └── streams
-│   │       └── msg_factory.h
 │   ├── main.c
-│   ├── Makefile
 │   ├── streams
-│   │   └── msg_factory.c
+│   ├── targets
 │   ├── test.c
-│   ├── text_proc
 │   └── unity_tools
-│       ├── cell_types.h
-│       ├── plat_log.h
-│       └── types.h
 ├── Readme.md
-└── Readme.txt
+├── Readme.txt
+├── build_tools
+│   ├── Compile_BinTarget.mk
+│   ├── Compile_EnvClean.mk
+│   ├── Compile_SharedLibTarget.mk
+│   ├── Compile_StaticLibTarget.mk
+│   ├── Compile_build.mk
+│   ├── Compile_functions.mk
+│   ├── build_system_design.md
+│   ├── build_system_design.txt
+│   ├── main.c
+│   └── newbie_build.src
+├── main.c
+└── tools
+    └── mMake.sh
 ```
 
 主要有
