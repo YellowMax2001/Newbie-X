@@ -10,7 +10,7 @@ Compile_AR := ${Compile_CCPrefix}ar
 
 CC_COMPILE_FLAG := -fPIC -std=gnu99
 CC_LINK_FLAG := -lpthread
-CPP_COMPILE_FLAG := -fPIC
+CPP_COMPILE_FLAG := -fPIC -std=c++11
 CPP_LINK_FLAG :=
 SYS_INC := $(addprefix -I,$(Compile_RootIncludeDir_Default))
 
