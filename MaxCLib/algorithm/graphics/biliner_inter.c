@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 
     pSrcYUVFp = fopen(argv[1], "rb");
     if (NULL == pSrcYUVFp) {
-        printf("Can't open file[%s], check if it is exist.\n", pSrcYUVFp);
+        printf("Can't open file[%s], check if it is exist.\n", argv[1]);
         goto EOSrcFile;
     }
 

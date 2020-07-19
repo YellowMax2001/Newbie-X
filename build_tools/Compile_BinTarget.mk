@@ -34,7 +34,7 @@ else
 endif
 endif
 
-%.c.o : %.c
+%.c.o : %.c %.h
 ifeq ($(BUILD_DBG),1)
 	@echo "\033[31mCompile_CC:\033[0m \033[34m $(Compile_CC) \033[0m"
 	@echo "\033[31mCompile_RootIncludeDir:\033[0m \033[34m $(Compile_RootIncludeDir) $(CompileHeaderFiles) \033[0m"
@@ -49,7 +49,7 @@ else
 	$(COMPILE_OPTION_PREFIX)  $(Compile_CPP) $(strip $(Compile_RootIncludeDir)) $(strip $(addprefix -I,$(CompileHeaderFiles)))  -c -o $@ $< $(strip $(CompileCPPFlags))
 endif
 
-%.cpp.o : %.cpp
+%.cpp.o : %.cpp %.h
 ifeq ($(BUILD_DBG),1)
 	@echo "\033[31mCompile_CPP:\033[0m \033[34m $(Compile_CPP) \033[0m"
 	@echo "\033[31mCompile_RootIncludeDir:\033[0m \033[34m $(Compile_RootIncludeDir) $(CompileHeaderFiles) \033[0m"

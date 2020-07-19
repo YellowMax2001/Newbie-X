@@ -31,7 +31,8 @@ public:
 
     inline std::string* GetAndPrintPipelineName()
     {
-        std::cout<<"This pipeline name is:%s"<<m_pipelineName;
+        printf("This pipeline[%p] name is:%s/%p\n", &m_pipelineName,
+            m_pipelineName.c_str(), m_pipelineName.c_str());
 
         return &m_pipelineName;
     }
@@ -50,8 +51,9 @@ private:
     // compiler will drop a error.
     //Pipeline(const Pipeline& pipeline);
 	std::string m_pipelineName;
+	int* m_pPipelineNodesRef;
 };
 
 }
 
-#endif
+#endif // End of _CONSTRUCTOR_H_
