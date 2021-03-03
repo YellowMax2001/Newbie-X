@@ -2,6 +2,8 @@ include $(ENV_CLEAN_SCRIPT)
 
 CompileHeaderFiles += $(addprefix $(call my_dir)/, $(wildcard *.h))
 
+CompileHeaderDirs += $(call my_dir)
+
 CompileSrcFiles +=
 
 SplittedCompileSrcFiles += $(addprefix $(call my_dir)/, $(wildcard *.c))

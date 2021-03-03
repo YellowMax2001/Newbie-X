@@ -4,25 +4,29 @@ CompileHeaderFiles += $(addprefix $(call my_dir)/, $(wildcard *.h))
 
 CompileHeaderDirs += $(call my_dir)
 
-CompileSrcFiles += $(addprefix $(call my_dir)/, $(wildcard *.cpp))
+CompileSrcFiles +=
 
-SplittedCompileSrcFiles +=
+SplittedCompileSrcFiles += $(addprefix $(call my_dir)/, $(wildcard *.cpp))
 
-CompileCCFlags +=
+CompileCCFlags += -g
 
-CompileCCLinkFlags += -lm -lstd
+CompileCPPFlags += -g
 
-CompileTarget := Constructor
+CompileCCLinkFlags += -lm
+
+CompileCPPLinkFlags += -lm
+
+CompileTarget := 
 
 include $(ENV_BIN_TARGET_SCRIPT)
 
 distclean::
 	$(call rm_files, \
 		$(addprefix $(TOP_DIR)/MaxCLib/targets/bin/, \
-		${CompileTarget}))
+		$(patsubst %.c, %, $(notdir ${SplittedCompileSrcFiles}))))
 
 CompilePhonyAdditionalTarget:
 	$(info \
 	$(call copy_to_dir,\
 		$(TOP_DIR)/MaxCLib/targets/bin,\
-		${CompileTarget}))
+		$(patsubst %.c, %, ${SplittedCompileSrcFiles})))

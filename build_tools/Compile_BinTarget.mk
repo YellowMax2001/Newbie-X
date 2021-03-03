@@ -34,7 +34,7 @@ else
 endif
 endif
 
-%.c.o : %.c %.h
+%.c.o : %.c $(CompileHeaderFiles)
 ifeq ($(BUILD_DBG),1)
 	@echo "\033[31mCompile_CC:\033[0m \033[34m $(Compile_CC) \033[0m"
 	@echo "\033[31mCompile_RootIncludeDir:\033[0m \033[34m $(Compile_RootIncludeDir) $(CompileHeaderFiles) \033[0m"
@@ -43,28 +43,30 @@ ifeq ($(BUILD_DBG),1)
 endif
 ifeq (${TmpVarNormalCppFiles},)
 	@ echo "CC  $(notdir $<)"
-	$(COMPILE_OPTION_PREFIX)  $(Compile_CC) $(strip $(Compile_RootIncludeDir)) $(strip $(addprefix -I,$(CompileHeaderFiles))) -c -o $@ $< $(strip $(CompileCCFlags))
+	$(COMPILE_OPTION_PREFIX)  $(Compile_CC) $(strip $(Compile_RootIncludeDir)) $(strip $(addprefix -I,$(CompileHeaderDirs))) -c -o $@ $< $(strip $(CompileCCFlags))
 else
-	@ echo "CCP $(notdir $<)"
-	$(COMPILE_OPTION_PREFIX)  $(Compile_CPP) $(strip $(Compile_RootIncludeDir)) $(strip $(addprefix -I,$(CompileHeaderFiles)))  -c -o $@ $< $(strip $(CompileCPPFlags))
+	@ echo "CPP $(notdir $<)"
+	$(COMPILE_OPTION_PREFIX)  $(Compile_CPP) $(strip $(Compile_RootIncludeDir)) $(strip $(addprefix -I,$(CompileHeaderDirs)))  -c -o $@ $< $(strip $(CompileCPPFlags))
 endif
 
-%.cpp.o : %.cpp %.h
+%.cpp.o : %.cpp $(CompileHeaderFiles)
 ifeq ($(BUILD_DBG),1)
 	@echo "\033[31mCompile_CPP:\033[0m \033[34m $(Compile_CPP) \033[0m"
 	@echo "\033[31mCompile_RootIncludeDir:\033[0m \033[34m $(Compile_RootIncludeDir) $(CompileHeaderFiles) \033[0m"
 	@echo "\033[31mCompileCPPFlags:\033[0m \033[34m $(CompileCPPFlags) \033[0m"
 	@echo "\033[31m$@:\033[0m \033[34m $^ \033[0m"
 endif
-	@ echo "CCP $(notdir $<)"
-	$(COMPILE_OPTION_PREFIX) $(Compile_CPP) $(strip $(Compile_RootIncludeDir)) $(strip $(addprefix -I,$(CompileHeaderFiles)))  -c -o $@ $< $(strip $(CompileCPPFlags))
+	@ echo "CPP $(notdir $<)"
+	$(COMPILE_OPTION_PREFIX) $(Compile_CPP) $(strip $(Compile_RootIncludeDir)) $(strip $(addprefix -I,$(CompileHeaderDirs)))  -c -o $@ $< $(strip $(CompileCPPFlags))
 
 distclean:: clean
+	@echo "\033[31m Distclean \033[0m \033[34m \033[0m"
 	@$(call rm_files, ${CompileTarget})
 	@$(call rm_files, $(patsubst %.cpp, %, $(filter %.cpp, ${SplittedCompileSrcFiles})))
 	@$(call rm_files, $(patsubst %.c, %, $(filter %.c, ${SplittedCompileSrcFiles})))
 
 clean:
+	@echo "\033[31m Clean\033[0m \033[34m \033[0m"
 	@$(call rm_files, $(patsubst %.c, %.c.o, $(filter %.c, ${CompileSrcFiles})))
 	@$(call rm_files, $(patsubst %.cpp, %.cpp.o, $(filter %.cpp, ${CompileSrcFiles})))
 	@$(call rm_files, $(patsubst %.c, %.c.o, $(filter %.c, ${SplittedCompileSrcFiles})))

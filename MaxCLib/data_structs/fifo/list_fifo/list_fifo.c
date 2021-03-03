@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <lish.h>
+#include "list.h"
+#include "plat_log.h"
 
-#include <list_fifo.h>
+#include "list_fifo.h"
 
 struct list_fifo_elem {
     struct list_head list_idle;
@@ -73,7 +76,7 @@ static int push_fifo(struct list_fifo *fifo, struct list_fifo_buf *buf)
     /* Alloc one message id. */
     unsigned int i = 0;
     int iSizeofMapElem = sizeof(fifo_elem->bitBufIdMap[0])*8;
-    for (i = 0; i < sizeof(fifo_elem->bitBufIdMap)*iSizeofMapElem); i++) {
+    for (i = 0; i < sizeof(fifo_elem->bitBufIdMap)*iSizeofMapElem; i++) {
         if (!(fifo_elem->bitBufIdMap[i/iSizeofMapElem] & 1 << (i%iSizeofMapElem))) {
             buf_push->list_buf.id = i;
         }
@@ -154,7 +157,7 @@ static int release_fifo(struct list_fifo *fifo, struct list_fifo_buf *buf)
             &= ~(1 << (buf_cur->list_buf.id%iSizeofMapElem));
         fifo_elem->buf_cnt--;
         if (fifo_elem->b_wait_used_empty)
-            pthread_cond_signal(&fifo_elem->list_cond, &fifo_elem->list_lock);
+            pthread_cond_signal(&fifo_elem->list_cond);
     } else {
         nb_loge("Cannot find message id is [%d].\n", buf->id);
     }
@@ -183,7 +186,7 @@ static int wait_release_all_fifos(struct list_fifo *fifo)
     return ret;
 }
 
-static int reset_fifo(struct list_fifo *fifo)
+static int reset_fifo(struct list_fifo *fifo, bool all_list)
 {
     int ret = 0;
     struct list_fifo_elem *fifo_elem =
@@ -227,7 +230,7 @@ static int revert_fifo(struct list_fifo *fifo, enum fifo_type type)
 
     pthread_mutex_lock(&fifo_elem->list_lock);
 
-    switch ()
+    //switch ()
 
     pthread_mutex_unlock(&fifo_elem->list_lock);
     return ret;
@@ -274,7 +277,7 @@ void get_fifo_attr(struct list_fifo *fifo, struct list_fifo_attr *attr)
 
 struct list_fifo *list_fifo_create(struct list_fifo_attr *fifo_attr)
 {
-    stuct list_fifo_elem *elem = NULL;
+    struct list_fifo_elem *elem = NULL;
 
     elem = (struct list_fifo_elem*)malloc(sizeof(struct list_fifo_elem));
     if (NULL == elem) {
@@ -295,7 +298,7 @@ struct list_fifo *list_fifo_create(struct list_fifo_attr *fifo_attr)
             "is larger than [%d], wiil be set to [%d].\n", MAX_PRESET_NUM, MAX_PRESET_NUM);
     }
 
-    elem->list_attr.max_num = min(elem->list_attr.max_num, MAX_PRESET_NUM);
+    elem->list_attr.max_num = min(elem->list_attr.max_num, (unsigned int)MAX_PRESET_NUM);
 
     int i = 0;
     struct list_fifo_buf_internal *buf_tmp = NULL;
@@ -306,7 +309,7 @@ struct list_fifo *list_fifo_create(struct list_fifo_attr *fifo_attr)
                 " errno[%d]\n", errno, i);
             break;
         }
-        memset(buf_tmp, 0, siezof(typeof(buf_tmp)));
+        memset(buf_tmp, 0, sizeof(typeof(buf_tmp)));
 
         list_add_tail(&buf_tmp->mlist, &elem->list_idle);
     }

@@ -1,5 +1,6 @@
 #TOP_DIR := $(shell pwd)
 Compile_RootIncludeDir_Default := $(TOP_DIR)/MaxCLib/unity_tools/ \
+	$(TOP_DIR)/MaxCLib/include/common/ \
 	$(shell find ${TOP_DIR} -name "include")
 
 Compile_CCPrefix := ${COMPILE_CC_PREFIX}
@@ -20,6 +21,7 @@ COMPILE_OPTION_PREFIX=@
 # Default params
 Compile_RootIncludeDir_Default := ${SYS_INC}
 CompileHeaderFiles_Default :=
+CompileHeaderDirs_Default :=
 CompileSrcFiles_Default :=
 CompileCCFlags_Default := ${CC_COMPILE_FLAG}
 CompileCCLinkFlags_Default := ${CC_LINK_FLAG}

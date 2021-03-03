@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <sys/time.h>
 
-#include <plat_log.h>
+#include "plat_log.h"
 
 #define TIME_INIT_START_END(x) struct timeval start_##x; \
                        struct timeval end_##x; \

@@ -22,7 +22,7 @@ struct list_head {
 #define LIST_POISON1  (NULL)
 #define LIST_POISON2  (NULL)
 
-#define offsetof(TYPE, MEMBER) ((unsigned int) &((TYPE *)0)->MEMBER)
+#define offsetof(TYPE, MEMBER) ((unsigned long long int) &((TYPE *)0)->MEMBER)
 
 #define container_of(ptr, type, member) ({			\
 	const typeof( ((type *)0)->member ) *__mptr = (ptr);	\

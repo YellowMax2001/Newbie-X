@@ -14,7 +14,7 @@
 #include <plat_log.h>
 #include <cell_types.h>
 
-#include <data_structs/ring_buffer.h>
+#include "ring_buffer.h"
 
 /**
  * struct ring_buffer_entity - ring buffer internal implement

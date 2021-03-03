@@ -1,5 +1,6 @@
 Compile_RootIncludeDir := ${Compile_RootIncludeDir_Default}
 CompileHeaderFiles := ${CompileHeaderFiles_Default}
+CompileHeaderDirs  := ${CompileHeaderDirs_Default}
 CompileSrcFiles := ${CompileSrcFiles_Default}
 SplittedCompileSrcFiles := ${SplittedCompileSrcFiles_Default}
 CompileCCFlags := ${CompileCCFlags_Default}
